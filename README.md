@@ -1,6 +1,6 @@
-## Yii2+mongodb project docker Image
+## PHP 7.2 (php-fpm) + MongoDb project docker Image
 
-This Docker image is based on [Official Yii2 docker image](https://github.com/yiisoft/yii2-docker), but uses only alpine version of php container.
+This Docker image is based on [Official Yii2 docker image](https://github.com/yiisoft/yii2-docker), but uses only alpine version of php container and has a little another structure.
 
 Inspired by [avb-89's article](https://habrahabr.ru/post/349704/)
  
@@ -46,48 +46,12 @@ README.md
 ```
 
 **app** folder is where your yii application should be placed
+
 **nginx/etc/nginx/conf.d/nginx.conf** is nginx config
+
 **php/image-files/usr/local/etc/php/php.ini** is php config
+
 **.env** file is environment for docker-compose (.env-dist is default config to copy to .env. See [official documentation](https://github.com/yiisoft/yii2-docker))
-
-### Docker commands
-
-1. To build an image run following command
-
-```
-docker-compose build
-```
-
-2. To connect running php container's bash
-
-```
-docker-compose exec -i -t CONTAINER_NAME /bin/bash
-```
-
-3. To list existing containers
-
-```
-docker container ls
-```
-
-4. Stop and remove all docker containers
-
-```
-docker stop $(docker ps -a -q)
-docker rm $(docker ps -a -q)
-```
-
-5. Prune all containers, images, volumes and networks
-
-```
-docker system prune -a
-```
-
-6. Rebuild specified service
-
-```
-docker-compose up -d --no-deps --build <service_name>
-```
 
 ### Create project database
 
@@ -131,4 +95,43 @@ mongo -u "siteusr" -p "sitepass" -authenticationDatabase "sitebase"
 composer create-project yiisoft/yii2-app-basic /app
 ```
 
-Note that /app folder must be empty or contain composer.json
+Note that /app folder must be empty
+
+### Docker commands
+
+1. To build an image run following command
+
+```
+docker-compose build
+```
+
+2. To connect running php container's bash
+
+```
+docker-compose exec -i -t CONTAINER_NAME /bin/bash
+```
+
+3. To list existing containers
+
+```
+docker container ls
+```
+
+4. Stop and remove all docker containers
+
+```
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+```
+
+5. Prune all containers, images, volumes and networks
+
+```
+docker system prune -a
+```
+
+6. Rebuild specified service
+
+```
+docker-compose up -d --no-deps --build <service_name>
+```
