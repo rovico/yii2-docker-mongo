@@ -1,0 +1,48 @@
+version: '3.3'
+services:
+    nginx:
+        image: nginx:latest
+        container_name: nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./nginx/etc/nginx/conf.d:/etc/nginx/conf.d
+            - ./app:/app
+            - ./nginx/var/log/nginx:/var/log/nginx/
+            - ./nginx/usr/share/nginx/html:/usr/share/nginx/html/
+        links:
+            - php
+    #docker exec -it mongodb mongo admin
+    mongodb:
+        image: mongo:latest
+        container_name: mongodb
+        environment:
+          - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+          - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+          - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+          - MONGO_DATA_DIR=/data/db
+          - MONGO_LOG_DIR=/dev/null
+        ports:
+          - 27017:27017
+        volumes:
+          - ./data/db:/data/db
+        command: mongod --smallfiles --logpath=/dev/null # --quiet
+    php:
+        image: ${PHP_IMAGE_NAME}:${PHP_BASE_IMAGE_VERSION}${PHP_IMAGE_VERSION_SUFFIX}
+        container_name: php-fpm
+        build: 
+          dockerfile: Dockerfile
+          context: 'php'
+          args:
+            - PHP_BASE_IMAGE_VERSION=${PHP_BASE_IMAGE_VERSION}
+        environment:
+            - GITHUB_API_TOKEN=${GITHUB_API_TOKEN}
+            - PHP_ENABLE_XDEBUG
+            - TEST_RUNTIME_PATH=/tmp/runtime
+        volumes:
+            - ./tests:/tests
+            - ./app:/app
+            - ~/.composer-docker/cache:/root/.composer/cache
+        links:
+            - mongodb
